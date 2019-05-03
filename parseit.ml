@@ -5,20 +5,13 @@ let split_text = ["He"; "Saw"; "H;e"; "was"; "sAw"; ".\n"] ;;
 
 let punctuation = ['.'; '!'; '"'; ':'; ';'; ','; '-'; '\n'] ;; (*TO DO: more punctuation*)
 
-(*deletes all punctuation/other whitespace by splitting on specificed characters
-and concatenating once more*)
-let strip_punctuation (str : string) : string =
-  List.fold_right (fun c s -> String.concat  "" (String.split_on_char c s)) punctuation str;;
-
-let process (s : string) : string = 
-  String.lowercase_ascii (strip_punctuation s) ;;
-
-(*let rec process_all (lst : string list) : string list =
-  match lst with
-  | [] -> []
-  | hd :: tl -> (process hd) :: process_all tl ;; (*TO DO: can this be made nicer with a fold?*)*)
-
 let process_all (lst : string list) : string list =
+  (*handles a single string*)
+  let process (str : string) : string =
+    let lowercase_str = String.lowercase_ascii str in
+    List.fold_right (fun c s -> String.concat  "" (String.split_on_char c s))
+                    punctuation lowercase_str in
+  (*processes entire list*)
   List.fold_right (fun s l -> (process s) :: l) lst [] ;;
 
 let count (lst : string list) : (string, int) Hashtbl.t =
@@ -28,4 +21,5 @@ let count (lst : string list) : (string, int) Hashtbl.t =
     else Hashtbl.add frequencies s 1 in
   List.iter add lst; frequencies ;;
 
+(*prints the list of stuffs*)
 List.iter (fun s -> Printf.printf "%s\n" s) (process_all split_text) ;;
