@@ -1,27 +1,28 @@
 open Printf
-let strings_of_examples = ref []
+let all_word_lists = ref []
 let file_of_files = "masterfile.txt"
 
-let rec string_list_to_string (lst : string list) (s : string) : string =
-  match lst with
-  | [] -> s
-  | h :: t -> string_list_to_string t (h ^ s) ;;
-
-  let make_string (s : string) : string list =
+let make_string (s : string) : string list =
   let next_file_channel = open_in s in
-   let lines = ref [] in
-   try
-   while true; do
-    lines := input_line next_file_channel :: !lines
-    done; !lines
-   with End_of_file -> close_in next_file_channel; !lines ;;
+  let word_list = ref [] in
+  let next_word = ref "" in
+  try
+  while true; do
+    let next_char = input_char next_file_channel in
+    if next_char = ' ' then (word_list := !next_word :: !word_list; next_word := "")
+    else next_word := !next_word ^ "next_char"
+    done; !next_word :: !word_list;
+   with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
 
 let () =
-let ic = open_in file_of_files in
-try
-while true; do
-  let next_file = input_line ic in
-  strings_of_examples := string_list_to_string (make_string next_file) "" :: !strings_of_examples
-done
-with End_of_file -> close_in ic
+  let ic = open_in file_of_files in
+  try
+  while true; do
+    let next_file = input_line ic in
+    all_word_lists := (make_string next_file) :: !all_word_lists
+  done
+  with End_of_file -> close_in ic
  ;;
+
+
+(* To Do make design better *)
