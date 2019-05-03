@@ -13,10 +13,13 @@ let strip_punctuation (str : string) : string =
 let process (s : string) : string = 
   String.lowercase_ascii (strip_punctuation s) ;;
 
-let rec process_all (lst : string list) : string list =
+(*let rec process_all (lst : string list) : string list =
   match lst with
   | [] -> []
-  | hd :: tl -> (process hd) :: process_all tl ;; (*TO DO: can this be made nicer with a fold?*)
+  | hd :: tl -> (process hd) :: process_all tl ;; (*TO DO: can this be made nicer with a fold?*)*)
+
+let process_all (lst : string list) : string list =
+  List.fold_right (fun s l -> (process s) :: l) lst [] ;;
 
 let count (lst : string list) : (string, int) Hashtbl.t =
   let frequencies = Hashtbl.create 3 in
