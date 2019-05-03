@@ -1,4 +1,4 @@
-all: input-output parseit
+all: ioit parseit
 
 ioit: ioit.ml
 	ocamlbuild -use-ocamlfind ioit.byte
