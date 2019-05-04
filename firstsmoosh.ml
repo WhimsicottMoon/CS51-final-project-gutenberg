@@ -27,18 +27,20 @@ let take_input =
     done
   with End_of_file -> close_in ic ;;
 
-(* To Do make design better *)
-
 (*PART 2: Parse strings*)
 
-let punctuation = ['.'; '!'; '"'; ':'; ';'; ','; '-'; '\n'] ;; (*TO DO: more punctuation*)
+(*A list of all characters we want to discard, including all punctuation/symbols,
+ which have ASCII codes 33-47, 58-64, and 91-96 *)
+let to_discard = List.init 15 (fun i -> Char.chr (i + 33))
+                @ List.init 7 (fun j -> Char.chr (j + 58))
+                @ List.init 6 (fun k -> Char.chr (k + 91)) ;;
 
 let process_book (lst : string list) : string list =
   (*handles a single string*)
   let process (str : string) : string =
     let lowercase_str = String.lowercase_ascii str in
     List.fold_right (fun c s -> String.concat  "" (String.split_on_char c s))
-                    punctuation lowercase_str in
+                    to_discard lowercase_str in
   (*processes entire list*)
   List.fold_right (fun s l -> (process s) :: l) lst [] ;;
 
@@ -59,7 +61,7 @@ let process_all (master_lst : string list list) : (string, int) Hashtbl.t list =
 
 let display =
   let nice_lst = List.map to_rank_list (process_all (!all_word_lists)) in
-  List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f)) nice_lst ;;
+ List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f)) nice_lst ;;
 
 (*RUN EVERYTHING HERE*)
 let () =
