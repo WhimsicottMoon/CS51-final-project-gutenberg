@@ -5,7 +5,7 @@ let split_text = ["He"; "Saw"; "H;e"; "was"; "sAw"; ".\n"] ;;
 
 let punctuation = ['.'; '!'; '"'; ':'; ';'; ','; '-'; '\n'] ;; (*TO DO: more punctuation*)
 
-let process_all (lst : string list) : string list =
+let process_book (lst : string list) : string list =
   (*handles a single string*)
   let process (str : string) : string =
     let lowercase_str = String.lowercase_ascii str in
@@ -22,4 +22,4 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   List.iter add lst; Hashtbl.remove frequencies ""; frequencies ;;
 
 (*prints the list of stuffs*)
-List.iter (fun s -> Printf.printf "%s\n" s) (process_all split_text) ;;
+List.iter (fun s -> Printf.printf "%s\n" s) (process_book split_text) ;;

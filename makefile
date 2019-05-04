@@ -1,4 +1,4 @@
-all: ioit parseit
+all: ioit parseit firstsmoosh
 
 ioit: ioit.ml
 	ocamlbuild -use-ocamlfind ioit.byte
@@ -6,8 +6,8 @@ ioit: ioit.ml
 parseit: parseit.ml
 	ocamlbuild -use-ocamlfind parseit.byte
 
-ahhh: ahh.ml
-	ocamlbuild -use-ocamlfind ahhh.byte
+firstsmoosh: firstsmoosh.ml
+	ocamlbuild -use-ocamlfind firstsmoosh.byte
 
 clean:
 	rm -rf _build *.byte
