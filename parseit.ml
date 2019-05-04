@@ -14,7 +14,7 @@ let process_all (lst : string list) : string list =
   (*processes entire list*)
   List.fold_right (fun s l -> (process s) :: l) lst [] ;;
 
-let count (lst : string list) : (string, int) Hashtbl.t =
+let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   let frequencies = Hashtbl.create 3 in
   let add (s : string) : unit =
     if Hashtbl.mem frequencies s then Hashtbl.replace frequencies s (succ (Hashtbl.find frequencies s))
