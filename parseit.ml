@@ -19,7 +19,7 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   let add (s : string) : unit =
     if Hashtbl.mem frequencies s then Hashtbl.replace frequencies s (succ (Hashtbl.find frequencies s))
     else Hashtbl.add frequencies s 1 in
-  List.iter add lst; frequencies ;;
+  List.iter add lst; Hashtbl.remove frequencies ""; frequencies ;;
 
 (*prints the list of stuffs*)
 List.iter (fun s -> Printf.printf "%s\n" s) (process_all split_text) ;;
