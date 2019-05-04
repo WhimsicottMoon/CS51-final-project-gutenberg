@@ -3,6 +3,8 @@
 let all_word_lists = ref [] (* is a string list list with inner lists as books split into words*)
 let file_of_files = "masterfile.txt" (* has addresses of every book to run this on *)
 
+let whitespace = [' '; '\n'; '\r']
+
 (* for each book, reads in character by character and splits into
    new word when hits space, otherwise adds to current word*)
 let make_string (s : string) : string list =
@@ -12,7 +14,7 @@ let make_string (s : string) : string list =
   try
   while true; do
     let next_char = input_char next_file_channel in
-    if next_char = ' ' || next_char = '\n' then (word_list := !next_word :: !word_list; next_word := "")
+    if List.mem next_char whitespace then (word_list := !next_word :: !word_list; next_word := "")
     else next_word := !next_word ^ (Char.escaped next_char)
     done; !next_word :: !word_list;
    with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
