@@ -12,11 +12,20 @@ let make_string (s : string) : string list =
   try
   while true; do
     let next_char = input_char next_file_channel in
-    if next_char = ' ' then (word_list := !next_word :: !word_list; next_word := "")
-    else next_word := !next_word ^ "next_char"
+    if next_char = ' ' || next_char = '\n' then (word_list := !next_word :: !word_list; next_word := "")
+    else next_word := !next_word ^ (Char.escaped next_char)
     done; !next_word :: !word_list;
    with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
 
+let take_input =
+  (*goes through the master file and gives the address of each book to make_string*)
+  let ic = open_in file_of_files in
+  try
+    while true; do
+      let next_file = input_line ic in
+      all_word_lists := (make_string next_file) :: !all_word_lists
+    done
+  with End_of_file -> close_in ic ;;
 
 (* To Do make design better *)
 
@@ -40,22 +49,18 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
     else Hashtbl.add frequencies s 1 in
   List.iter add lst; Hashtbl.remove frequencies ""; frequencies ;;
 
-(*let to_rank_list (tbl : (string, int) Hashtbl.t) : (int * int) list =
-  let word_freq = (*convert seq to list*)(Hashtbl.to_seq tbl) in
-*)
+let to_rank_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
+  let compare_word_freq (_, f1 : string * int) (_, f2 : string * int) : int =
+    ~-(compare f1 f2) in
+  List.mapi (fun i (w,f) -> w, f, i+1 ) (List.sort compare_word_freq (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
 
 let process_all (master_lst : string list list) : (string, int) Hashtbl.t list =
   List.map (fun book -> count_freqs (process_book book)) master_lst ;;
 
+let display =
+  let nice_lst = List.map to_rank_list (process_all (!all_word_lists)) in
+  List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f)) nice_lst ;;
 
 (*RUN EVERYTHING HERE*)
 let () =
-  (*goes through the master file and gives the address of each book to make_string*)
-  let ic = open_in file_of_files in
-  try
-    while true; do
-      let next_file = input_line ic in
-      all_word_lists := (make_string next_file) :: !all_word_lists
-    done
-  with End_of_file -> close_in ic ;
-  let hshtbls = process_all (!all_word_lists) in () ;;
+  take_input ; display ;;

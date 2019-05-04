@@ -1,7 +1,7 @@
 (*Just the portion that parses the input strings*)
 
 let original_text = "He Saw H;e was sAw.\n" ;;
-let split_text = ["He"; "Saw"; "H;e"; "was"; "sAw"; ".\n"] ;;
+let split_text = ["He"; "Saw,"; "H;e"; "was\na"; "sAw"; ".\n"] ;;
 
 let punctuation = ['.'; '!'; '"'; ':'; ';'; ','; '-'; '\n'] ;; (*TO DO: more punctuation*)
 
