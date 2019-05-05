@@ -20,7 +20,7 @@ let () =
     plstring( 101, rlog, flog , "#(728)" );
     (if !oldy <> 0 then pljoin(!oldx, !oldy, rlog, flog);
     oldx := rlog;
-    oldy := flog; ()) in
+    oldy := flog;) in
 
   List.iter ((List.iter plotter); fun x -> colorer := !colorer + 1) nice_lst ;;
   let l = List.length book_files in
