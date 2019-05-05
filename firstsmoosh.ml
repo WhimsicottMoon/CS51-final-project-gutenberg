@@ -1,13 +1,16 @@
 (*PART 1: Extract information from files*)
 
-(* List of string lists, each of which represent all the words in a single book*)
+(* List of string lists, each of which contain all the words in a single book*)
 let all_word_lists = ref []
 
-(* has file paths of each book's .txt file*)
+(*A text file with all the file paths to each book's .txt file*)
 let file_of_files = "masterfile.txt"
 
+(*List of all the books' file paths*)
+let book_files = ref []
 
-(* Read in one char at a time and split at whitespace to form new words,
+
+(*Read in one char at a time and split at whitespace to form new words,
    operates on the text for a single book *)
 
 let whitespace = [' '; '\n'; '\r']
@@ -25,15 +28,16 @@ let make_string (s : string) : string list =
     done; !next_word :: !word_list;
    with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
 
-(*Goes through main text file and gives the each book's file path to make_string*)
+(*Goes through main text file, stores all the book file names,
+ and gives the each book's file path to make_string*)
 let take_input =
   let ic = open_in file_of_files in
   try
     while true; do
-      let next_file = input_line ic in
-      all_word_lists := (make_string next_file) :: !all_word_lists
+      book_files := !book_files @ [input_line ic]
     done
-  with End_of_file -> close_in ic ;;
+  with End_of_file -> close_in ic ;
+  all_word_lists := List.map make_string !book_files ;;
 
 
 (*PART 2: Parse strings*)
@@ -56,7 +60,12 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
     if Hashtbl.mem frequencies s
       then Hashtbl.replace frequencies s (succ (Hashtbl.find frequencies s))
     else Hashtbl.add frequencies s 1 in
-  List.iter add lst; Hashtbl.remove frequencies ""; frequencies ;;
+  List.iter add lst;
+  Hashtbl.remove frequencies "";
+  frequencies ;;
+
+let count_all (master_lst : string list list) : (string, int) Hashtbl.t list =
+  List.map (fun book -> count_freqs (process_book book)) master_lst ;;
 
 let to_ranked_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
   let compare_word_freq (_, f1 : string * int) (_, f2 : string * int) : int =
@@ -64,12 +73,8 @@ let to_ranked_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
   List.mapi (fun i (w,f) -> w, f, i+1 )
             (List.sort compare_word_freq
                        (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
-
-let process_all (master_lst : string list list) : (string, int) Hashtbl.t list =
-  List.map (fun book -> count_freqs (process_book book)) master_lst ;;
-
 let display =
-  let nice_lst = List.map to_ranked_list (process_all (!all_word_lists)) in
+  let nice_lst = List.map to_ranked_list (count_all (!all_word_lists)) in
   List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f))
             nice_lst ;;
 
