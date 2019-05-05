@@ -25,7 +25,8 @@ let make_string (s : string) : string list =
     if List.mem next_char whitespace
       then (word_list := !next_word :: !word_list; next_word := "")
     else next_word := !next_word ^ (Char.escaped next_char)
-    done; !next_word :: !word_list;
+    done;
+    !next_word :: !word_list;
    with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
 
 (*Goes through main text file, stores all the book file names,
@@ -67,17 +68,20 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
 let count_all (master_lst : string list list) : (string, int) Hashtbl.t list =
   List.map (fun book -> count_freqs (process_book book)) master_lst ;;
 
-let to_ranked_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
+let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
   let compare_word_freq (_, f1 : string * int) (_, f2 : string * int) : int =
     ~-(compare f1 f2) in
   List.mapi (fun i (w,f) -> w, f, i+1 )
             (List.sort compare_word_freq
                        (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
-let display =
-  let nice_lst = List.map to_ranked_list (count_all (!all_word_lists)) in
+
+let rank_all (all_words : string list list) : (string * int * int) list list =
+  List.map rank_book (count_all all_words) ;;
+
+let print_results =
   List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f))
-            nice_lst ;;
+            (rank_all !all_word_lists) ;;
 
 (*RUN EVERYTHING HERE*)
 let () =
-  take_input ; display ;;
+  take_input ; print_results ;;
