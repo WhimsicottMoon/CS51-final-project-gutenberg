@@ -82,6 +82,13 @@ let print_results =
   List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f))
             (rank_all !all_word_lists) ;;
 
+let export_results =
+  let export_book (i : int) (file_name : string) : unit =
+    let oc = open_out (String.concat "" ((List.hd (String.split_on_char '.' file_name)) :: ["_ranking.txt"])) in
+    List.iter (fun (w, f, r) -> Printf.fprintf oc "%d: %s  %d\n" r w f) (List.nth (rank_all !all_word_lists) i);
+    close_out oc in
+  List.iteri export_book !book_files ;;
+
 (*RUN EVERYTHING HERE*)
 let () =
-  take_input ; print_results ;;
+  take_input ; export_results ;;
