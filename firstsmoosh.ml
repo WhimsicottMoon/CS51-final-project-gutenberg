@@ -78,9 +78,9 @@ let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
 let rank_all (all_words : string list list) : (string * int * int) list list =
   List.map rank_book (count_all all_words) ;;
 
-let print_results =
+(*let print_results =
   List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f))
-            (rank_all !all_word_lists) ;;
+            (rank_all !all_word_lists) ;;*)
 
 let export_results =
   let export_book (i : int) (file_name : string) : unit =
@@ -90,5 +90,5 @@ let export_results =
   List.iteri export_book !book_files ;;
 
 (*RUN EVERYTHING HERE*)
-let () =
-  take_input ; export_results ;;
+(*let () =
+  take_input ; export_results ;;*)
