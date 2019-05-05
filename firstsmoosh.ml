@@ -1,12 +1,17 @@
 (*PART 1: Extract information from files*)
 
-let all_word_lists = ref [] (* is a string list list with inner lists as books split into words*)
-let file_of_files = "masterfile.txt" (* has addresses of every book to run this on *)
+(* List of string lists, each of which represent all the words in a single book*)
+let all_word_lists = ref []
+
+(* has file paths of each book's .txt file*)
+let file_of_files = "masterfile.txt"
+
+
+(* Read in one char at a time and split at whitespace to form new words,
+   operates on the text for a single book *)
 
 let whitespace = [' '; '\n'; '\r']
 
-(* for each book, reads in character by character and splits into
-   new word when hits space, otherwise adds to current word*)
 let make_string (s : string) : string list =
   let next_file_channel = open_in s in
   let word_list = ref [] in
@@ -14,13 +19,14 @@ let make_string (s : string) : string list =
   try
   while true; do
     let next_char = input_char next_file_channel in
-    if List.mem next_char whitespace then (word_list := !next_word :: !word_list; next_word := "")
+    if List.mem next_char whitespace
+      then (word_list := !next_word :: !word_list; next_word := "")
     else next_word := !next_word ^ (Char.escaped next_char)
     done; !next_word :: !word_list;
    with End_of_file -> close_in next_file_channel; !next_word :: !word_list ;;
 
+(*Goes through main text file and gives the each book's file path to make_string*)
 let take_input =
-  (*goes through the master file and gives the address of each book to make_string*)
   let ic = open_in file_of_files in
   try
     while true; do
@@ -28,6 +34,7 @@ let take_input =
       all_word_lists := (make_string next_file) :: !all_word_lists
     done
   with End_of_file -> close_in ic ;;
+
 
 (*PART 2: Parse strings*)
 
@@ -37,32 +44,34 @@ let to_discard = List.init 32 (fun i -> Char.chr (i + 33))
                 @ List.init 6 (fun k -> Char.chr (k + 91)) ;;
 
 let process_book (lst : string list) : string list =
-  (*handles a single string*)
-  let process (str : string) : string =
+  let process_word (str : string) : string =
     let lowercase_str = String.lowercase_ascii str in
     List.fold_right (fun c s -> String.concat  "" (String.split_on_char c s))
                     to_discard lowercase_str in
-  (*processes entire list*)
-  List.fold_right (fun s l -> (process s) :: l) lst [] ;;
+  List.fold_right (fun s l -> (process_word s) :: l) lst [] ;;
 
 let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   let frequencies = Hashtbl.create 3 in
   let add (s : string) : unit =
-    if Hashtbl.mem frequencies s then Hashtbl.replace frequencies s (succ (Hashtbl.find frequencies s))
+    if Hashtbl.mem frequencies s
+      then Hashtbl.replace frequencies s (succ (Hashtbl.find frequencies s))
     else Hashtbl.add frequencies s 1 in
   List.iter add lst; Hashtbl.remove frequencies ""; frequencies ;;
 
-let to_rank_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
+let to_ranked_list (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
   let compare_word_freq (_, f1 : string * int) (_, f2 : string * int) : int =
     ~-(compare f1 f2) in
-  List.mapi (fun i (w,f) -> w, f, i+1 ) (List.sort compare_word_freq (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
+  List.mapi (fun i (w,f) -> w, f, i+1 )
+            (List.sort compare_word_freq
+                       (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
 
 let process_all (master_lst : string list list) : (string, int) Hashtbl.t list =
   List.map (fun book -> count_freqs (process_book book)) master_lst ;;
 
 let display =
-  let nice_lst = List.map to_rank_list (process_all (!all_word_lists)) in
- List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f)) nice_lst ;;
+  let nice_lst = List.map to_ranked_list (process_all (!all_word_lists)) in
+  List.iter (List.iter (fun (w, f, r) -> Printf.printf "%d: %s  %d\n" r w f))
+            nice_lst ;;
 
 (*RUN EVERYTHING HERE*)
 let () =
