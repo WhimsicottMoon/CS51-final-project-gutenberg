@@ -12,7 +12,7 @@ let () =
 
   (* Create a labelled box to hold the plot. *)
   plenv xmin xmax ymin ymax 0 0 ;
-  pllab "log of rank" "log of frequency" "Ziph's law for XXXX" ;
+  pllab "log of rank" "log of frequency" "Zipf's law for XXXX" ;
 
   (* Plot the data that was prepared above. *)
   let oldx = ref 0. in
