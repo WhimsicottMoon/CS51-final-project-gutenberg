@@ -6,15 +6,11 @@ let () =
   let ymin = 0.0 in
   let ymax = 20.0 in
 
-
-  (* Initialize plplot *)
   plinit ();
 
-  (* Create a labelled box to hold the plot. *)
   plenv xmin xmax ymin ymax 0 0 ;
   pllab "log of rank" "log of frequency" "Zipf's law for XXXX" ;
 
-  (* Plot the data that was prepared above. *)
   let oldx = ref 0. in
   let oldy = ref 0. in
   let colorer = ref 2 in
@@ -26,7 +22,7 @@ let () =
     oldx := rlog;
     oldy := flog; ()) in
 
-  List.iter ((List.iter plotter); colorer := !colorer + 1) nice_lst ;;
+  List.iter ((List.iter plotter); fun x -> colorer := !colorer + 1) nice_lst ;;
   let l = List.length book_files in
     let text_colors = Array.init l (fun x -> x + 2) in
     let text = Array.init l (fun x -> List.nth book_files x) in
