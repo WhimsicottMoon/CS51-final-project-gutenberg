@@ -31,10 +31,9 @@ let take_input =
 
 (*PART 2: Parse strings*)
 
-(*A list of all characters we want to discard, including all punctuation/symbols,
- which have ASCII codes 33-47, 58-64, and 91-96 *)
-let to_discard = List.init 15 (fun i -> Char.chr (i + 33))
-                @ List.init 7 (fun j -> Char.chr (j + 58))
+(*A list of all characters we want to discard, including punctuation, symbols,
+ and numbers, which have ASCII codes 33-64, and 91-96 *)
+let to_discard = List.init 32 (fun i -> Char.chr (i + 33))
                 @ List.init 6 (fun k -> Char.chr (k + 91)) ;;
 
 let process_book (lst : string list) : string list =
