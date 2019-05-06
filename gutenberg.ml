@@ -6,7 +6,7 @@ open Plplot
 let all_word_lists = ref []
 
 (* A text file with all the file paths to each book's .txt file *)
-let file_of_files = "Fantasy.txt"
+let file_of_files = "Science Fiction.txt"
 
 (* List of all the books' file paths *)
 let book_files = ref []
@@ -80,6 +80,8 @@ let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
 let rank_all (all_words : string list list) : (string * int * int) list list =
   List.map rank_book (count_all all_words) ;;
 
+(* Part 3: Export and Graph Results *)
+
 (*adijfkas;d*)
 let nice_lst = rank_all !all_word_lists
 
@@ -92,8 +94,6 @@ let export_results =
     close_out oc in
   List.iteri export_book !book_files ;;
 
-(* Part 3: Graph *)
-
 (* Set up plot boundaries, orientation, and labels; initialize *)
 let xmin = 0.0 in
 let xmax = 5.0 in
@@ -102,7 +102,7 @@ let ymax = 5.0 in
 plsdiori 1.0;
 plinit ();
 plenv xmin xmax ymin ymax 0 0 ;
-pllab "log of rank" "log of frequency" ("Zipf's law for ") ;
+pllab "log of rank" "log of frequency" ("Zipf's Law for " ^ (List.hd (String.split_on_char '.' file_of_files)));
 
 (* Plot each point as log of rank and frequency with plstring, and save
    the last point in order to connect the dots. Change color with each book
@@ -125,12 +125,13 @@ let plotter ((w, f, r) : (string * int * int)) : unit =
    *)
 let l = List.length !book_files in
 let text_colors = Array.init l (fun x -> x + 3) in
-let text = Array.init l (fun x -> List.nth !book_files x) in
+let text = Array.init l (fun x -> List.hd (String.split_on_char '.'
+                                          (List.nth !book_files x))) in
 let line_colors = Array.init l (fun x -> x + 3) in
 let line_styles = Array.make l 1 in
 let line_widths = Array.make l 1.0 in
 let symbol_colors = Array.init l (fun x -> x + 3) in
-let opt_array = [| [PL_LEGEND_LINE]; [PL_LEGEND_LINE; PL_LEGEND_SYMBOL] |] in
+let opt_array = Array.make l [PL_LEGEND_LINE; PL_LEGEND_SYMBOL] in
 let symbol_scales = Array.make l 1.0 in
 let symbol_numbers = Array.make l 3 in
 let symbols = Array.make l "#(728)" in
