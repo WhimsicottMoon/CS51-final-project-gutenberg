@@ -99,6 +99,8 @@ let () =
 
   plinit ();
 
+  plsdiori 1.;
+  plscolbg 255 255 255;
   plenv xmin xmax ymin ymax 0 0 ;
   pllab "log of rank" "log of frequency" "Zipf's law for XXXX" ;
 
