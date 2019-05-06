@@ -6,7 +6,7 @@ open Plplot
 let all_word_lists = ref []
 
 (* A text file with all the file paths to each book's .txt file *)
-let file_of_files = "masterfile.txt"
+let file_of_files = "dataset.txt"
 
 (* List of all the books' file paths *)
 let book_files = ref []
