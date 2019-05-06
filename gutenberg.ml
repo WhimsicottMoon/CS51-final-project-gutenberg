@@ -93,14 +93,14 @@ let () =
   let nice_lst = rank_all !all_word_lists in
 
   let xmin = 0.0 in
-  let xmax = 15.0 in
+  let xmax = 5.0 in
   let ymin = 0.0 in
-  let ymax = 20.0 in
-
+  let ymax = 5.0 in
+  
   plinit ();
 
-  plsdiori 1.;
-  plscolbg 255 255 255;
+ 
+  plscolbga 255 255 255 1.0;
   plenv xmin xmax ymin ymax 0 0 ;
   pllab "log of rank" "log of frequency" "Zipf's law for XXXX" ;
 
@@ -126,10 +126,10 @@ let () =
     let symbol_colors = Array.init l (fun x -> x + 3) in
     let opt_array = [| [PL_LEGEND_LINE]; [PL_LEGEND_LINE; PL_LEGEND_SYMBOL] |] in
     let symbol_scales = Array.make l 1.0 in
-    let symbol_numbers = Array.make l 2 in
+    let symbol_numbers = Array.make l 3 in
     let symbols = Array.make l "#(728)" in
 
-    pllegend [PL_LEGEND_BACKGROUND; PL_LEGEND_BOUNDING_BOX] []
+    pllegend [PL_LEGEND_BOUNDING_BOX] []
           0.0 0.0 0.1 15
           1 1 0 0
           opt_array
