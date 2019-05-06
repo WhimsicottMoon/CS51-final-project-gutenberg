@@ -1,4 +1,4 @@
-all: ioit parseit firstsmoosh
+all: ioit parseit firstsmoosh gutenberg
 
 ioit: ioit.ml
 	ocamlbuild -use-ocamlfind ioit.byte
@@ -8,6 +8,9 @@ parseit: parseit.ml
 
 firstsmoosh: firstsmoosh.ml
 	ocamlbuild -use-ocamlfind firstsmoosh.byte
+
+gutenberg: gutenberg.ml
+	ocamlfind opt -package plplot -linkpkg -o gutenberg.byte gutenberg.ml
 
 clean:
 	rm -rf _build *.byte
