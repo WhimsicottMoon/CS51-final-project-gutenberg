@@ -1,2 +1,0 @@
-jabberwocky.txt
-alice.txt

@@ -6,7 +6,7 @@ open Plplot
 let all_word_lists = ref []
 
 (* A text file with all the file paths to each book's .txt file *)
-let file_of_files = "dataset.txt"
+let file_of_files = "Fantasy.txt"
 
 (* List of all the books' file paths *)
 let book_files = ref []
@@ -80,67 +80,66 @@ let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
 let rank_all (all_words : string list list) : (string * int * int) list list =
   List.map rank_book (count_all all_words) ;;
 
+(*adijfkas;d*)
+let nice_lst = rank_all !all_word_lists
+
 (* Writes word frequency rankings to different files for each book *)
 let export_results =
   let export_book (i : int) (file_name : string) : unit =
-    let oc = open_out (String.concat "" ((List.hd (String.split_on_char '.' file_name)) :: ["_ranking.txt"])) in
-    List.iter (fun (w, f, r) -> Printf.fprintf oc "%d: %s  %d\n" r w f) (List.nth (rank_all !all_word_lists) i);
+    let oc = open_out ("Ranking of " ^ file_name) in
+    List.iter (fun (w, f, r) -> Printf.fprintf oc "%d: %s  %d\n" r w f)
+              (List.nth nice_lst i);
     close_out oc in
   List.iteri export_book !book_files ;;
 
-let () =
-  let nice_lst = rank_all !all_word_lists in
+(* Part 3: Graph *)
 
-  (* Part 3: Graph *)
+(* Set up plot boundaries, orientation, and labels; initialize *)
+let xmin = 0.0 in
+let xmax = 5.0 in
+let ymin = 0.0 in
+let ymax = 5.0 in
+plsdiori 1.0;
+plinit ();
+plenv xmin xmax ymin ymax 0 0 ;
+pllab "log of rank" "log of frequency" ("Zipf's law for ") ;
 
-  (* Set up plot boundaries, orientation, and labels; initialize *)
-  let xmin = 0.0 in
-  let xmax = 5.0 in
-  let ymin = 0.0 in
-  let ymax = 5.0 in
-  plsdiori 1.0;
-  plinit ();
-  plenv xmin xmax ymin ymax 0 0 ;
-  pllab "log of rank" "log of frequency" "Zipf's law for XXXX" ;
-
-  (* Plot each point as log of rank and frequency with plstring, and save
-     the last point in order to connect the dots. Change color with each book
-   *)
-  let oldx = ref 0. in
-  let oldy = ref 0. in
-  let colorer = ref 3 in
-  let plotter ((w, f, r) : (string * int * int)) : unit =
-    plcol0 !colorer;
-    let rlog = log10(float_of_int r) in
-    let flog = log10(float_of_int f) in
-    plstring [|rlog|] [|flog|] "#(728)";
-    (if !oldy <> 0. then pljoin !oldx !oldy rlog flog;
-    oldx := rlog;
-    oldy := flog;) in
+(* Plot each point as log of rank and frequency with plstring, and save
+   the last point in order to connect the dots. Change color with each book
+ *)
+let oldx = ref 0. in
+let oldy = ref 0. in
+let colorer = ref 3 in
+let plotter ((w, f, r) : (string * int * int)) : unit =
+  plcol0 !colorer;
+  let rlog = log10(float_of_int r) in
+  let flog = log10(float_of_int f) in
+  plstring [|rlog|] [|flog|] "#(728)";
+  (if !oldy <> 0. then pljoin !oldx !oldy rlog flog;
+  oldx := rlog;
+  oldy := flog;) in
   List.iter (fun lst -> List.iter plotter lst; colorer := !colorer + 1;) nice_lst ;;
 
-    (* Plplot has a lot of options for the pllegend function, so this is all
-       variables that set up the legend followed by running pllegend
-     *)
-  let l = List.length !book_files in
-  let text_colors = Array.init l (fun x -> x + 3) in
-  let text = Array.init l (fun x -> List.nth !book_files x) in
-  let line_colors = Array.init l (fun x -> x + 3) in
-  let line_styles = Array.make l 1 in
-  let line_widths = Array.make l 1.0 in
-  let symbol_colors = Array.init l (fun x -> x + 3) in
-  let opt_array = [| [PL_LEGEND_LINE]; [PL_LEGEND_LINE; PL_LEGEND_SYMBOL] |] in
-  let symbol_scales = Array.make l 1.0 in
-  let symbol_numbers = Array.make l 3 in
-  let symbols = Array.make l "#(728)" in
-
-  pllegend [PL_LEGEND_BOUNDING_BOX] []
-           0.0 0.0 0.1 15
-           1 1 0 0
-           opt_array
-           1.0 1.0 2.0
-           1.0 text_colors text
-           [||] [||] [||] [||]
-           line_colors line_styles line_widths
-           symbol_colors symbol_scales symbol_numbers symbols;
-;;
+  (* Plplot has a lot of options for the pllegend function, so these are all
+     variables that set up the legend followed by running pllegend
+   *)
+let l = List.length !book_files in
+let text_colors = Array.init l (fun x -> x + 3) in
+let text = Array.init l (fun x -> List.nth !book_files x) in
+let line_colors = Array.init l (fun x -> x + 3) in
+let line_styles = Array.make l 1 in
+let line_widths = Array.make l 1.0 in
+let symbol_colors = Array.init l (fun x -> x + 3) in
+let opt_array = [| [PL_LEGEND_LINE]; [PL_LEGEND_LINE; PL_LEGEND_SYMBOL] |] in
+let symbol_scales = Array.make l 1.0 in
+let symbol_numbers = Array.make l 3 in
+let symbols = Array.make l "#(728)" in
+pllegend [PL_LEGEND_BOUNDING_BOX] []
+         0.0 0.0 0.1 15
+         1 1 0 0
+         opt_array
+         1.0 1.0 2.0
+         1.0 text_colors text
+         [||] [||] [||] [||]
+         line_colors line_styles line_widths
+         symbol_colors symbol_scales symbol_numbers symbols ;;
