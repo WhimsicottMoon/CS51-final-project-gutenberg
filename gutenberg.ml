@@ -37,7 +37,7 @@ let take_input =
   try
     while true; do
       book_files := !book_files @ [input_line ic]
-    done
+    done}}}
   with End_of_file -> close_in ic ;
   all_word_lists := List.map make_string !book_files ;;
 
@@ -99,8 +99,8 @@ let xmin = 0.0 in
 let xmax = 5.0 in
 let ymin = 0.0 in
 let ymax = 5.0 in
-plsdiori 1.0;
 plinit ();
+plsdiori 1.0;
 plenv xmin xmax ymin ymax 0 0 ;
 pllab "log of rank" "log of frequency" ("Zipf's Law for " ^ (List.hd (String.split_on_char '.' file_of_files)));
 
