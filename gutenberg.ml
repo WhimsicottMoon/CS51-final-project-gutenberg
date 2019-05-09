@@ -50,6 +50,7 @@ let take_input =
 let to_discard = List.init 32 (fun i -> Char.chr (i + 33))
                  @ List.init 6 (fun k -> Char.chr (k + 91)) ;;
 
+(* Throws out punctuation, symbols, and numbers *)
 let process_book (lst : string list) : string list =
   let process_word (str : string) : string =
     let lowercase_str = String.lowercase_ascii str in
@@ -57,6 +58,7 @@ let process_book (lst : string list) : string list =
                     to_discard lowercase_str in
     List.fold_right (fun s l -> (process_word s) :: l) lst [] ;;
 
+(* Generates word-frequency hashtables for a single book *)
 let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   let frequencies = Hashtbl.create 3 in
   let add (s : string) : unit =
@@ -67,9 +69,12 @@ let count_freqs (lst : string list) : (string, int) Hashtbl.t =
   Hashtbl.remove frequencies "";
   frequencies ;;
 
+(* Runs count_freqs on every book *)
 let count_all (master_lst : string list list) : (string, int) Hashtbl.t list =
   List.map (fun book -> count_freqs (process_book book)) master_lst ;;
 
+
+(* Associates ranks with word-frequency pairings *)
 let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
   let compare_word_freq (_, f1 : string * int) (_, f2 : string * int) : int =
     ~-(compare f1 f2) in
@@ -77,12 +82,16 @@ let rank_book (tbl : (string, int) Hashtbl.t) : (string * int * int) list =
             (List.sort compare_word_freq
                        (Hashtbl.fold (fun w f acc -> (w, f) :: acc) tbl [])) ;;
 
+(* Runs rank_book on every book *)
 let rank_all (all_words : string list list) : (string * int * int) list list =
   List.map rank_book (count_all all_words) ;;
 
 (* Part 3: Export and Graph Results *)
 
-(*adijfkas;d*)
+(* This gives us a list of lists of word, frequency, rank tuples such that each 
+   inner list corresponds to a single book's data. This is all the data we need
+   for this part of the code, formatted the way we want.
+ *)
 let nice_lst = rank_all !all_word_lists
 
 (* Writes word frequency rankings to different files for each book *)
@@ -102,7 +111,9 @@ let ymax = 5.0 in
 plinit ();
 plsdiori 1.0;
 plenv xmin xmax ymin ymax 0 0 ;
-pllab "log of rank" "log of frequency" ("Zipf's Law for " ^ (List.hd (String.split_on_char '.' file_of_files)));
+pllab "log of rank"
+      "log of frequency"
+      ("Zipf's Law for " ^ (List.hd (String.split_on_char '.' file_of_files)));
 
 (* Plot each point as log of rank and frequency with plstring, and save
    the last point in order to connect the dots. Change color with each book
@@ -118,11 +129,12 @@ let plotter ((w, f, r) : (string * int * int)) : unit =
   (if !oldy <> 0. then pljoin !oldx !oldy rlog flog;
   oldx := rlog;
   oldy := flog;) in
-  List.iter (fun lst -> List.iter plotter lst; colorer := !colorer + 1;) nice_lst ;;
+  List.iter (fun lst -> List.iter plotter lst; colorer := !colorer + 1;)
+            nice_lst ;;
 
-  (* Plplot has a lot of options for the pllegend function, so these are all
-     variables that set up the legend followed by running pllegend
-   *)
+(* Plplot has a lot of options for the pllegend function, so these are all
+   variables that set up the legend followed by running pllegend
+ *)
 let l = List.length !book_files in
 let text_colors = Array.init l (fun x -> x + 3) in
 let text = Array.init l (fun x -> List.hd (String.split_on_char '.'
