@@ -19,7 +19,7 @@ let make_string (s : string) : string list =
   let next_file_channel = open_in s in
   let word_list = ref [] in
   let next_word = ref "" in
-  try Next, we use an
+  try
   while true; do
     let next_char = input_char next_file_channel in
     if List.mem next_char whitespace
@@ -37,7 +37,7 @@ let take_input =
   try
     while true; do
       book_files := !book_files @ [input_line ic]
-    done}}}
+    done;
   with End_of_file -> close_in ic ;
   all_word_lists := List.map make_string !book_files ;;
 
@@ -88,7 +88,7 @@ let rank_all (all_words : string list list) : (string * int * int) list list =
 
 (* Part 3: Export and Graph Results *)
 
-(* This gives us a list of lists of word, frequency, rank tuples such that each 
+(* This gives us a list of lists of word, frequency, rank tuples such that each
    inner list corresponds to a single book's data. This is all the data we need
    for this part of the code, formatted the way we want.
  *)
