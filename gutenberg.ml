@@ -19,7 +19,7 @@ let make_string (s : string) : string list =
   let next_file_channel = open_in s in
   let word_list = ref [] in
   let next_word = ref "" in
-  try
+  try Next, we use an
   while true; do
     let next_char = input_char next_file_channel in
     if List.mem next_char whitespace
